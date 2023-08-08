@@ -1,9 +1,7 @@
-package week1;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class prog_리코쳇_로봇 {
+public class prog_level2_리코쳇_로봇 {
 
 	private class Pos {
 		int x;
