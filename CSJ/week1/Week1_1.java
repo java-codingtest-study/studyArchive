@@ -1,3 +1,5 @@
+package week1;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Stack;
