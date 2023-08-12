@@ -1,78 +1,119 @@
+// [주요 정보]
+/*
+- 가장 처음에 아기 상어의 크기는 2
+- 아기 상어는 1초에 상하좌우로 인접한 한 칸씩 이동
+	- 아기 상어는 자신의 크기보다 큰 물고기가 있는 칸은 지나갈 수 없고, 나머지 칸은 모두 지나갈 수 있다
+- 아기 상어는 자신의 크기보다 작은 물고기만 먹을 수 있다.
+- 거리는 아기 상어가 있는 칸에서 물고기가 있는 칸으로 이동할 때, 지나야하는 칸의 개수의 최솟값(BFS 인데 아래와 같은 조건이 있기 때문에 일반 큐가 아닌 우선순위 큐 사용)
+	[물고기 먹기 규칙]
+	1. 거리가 가까운 순서
+	2. 거리가 같다면 y가 작은 순서
+	3. y가 같다면 x가 작은 순서
+- 아기 상어는 자신의 크기와 같은 수의 물고기를 먹을 때 마다 크기가 1 증가
+	- 예를 들어, 크기가 2인 아기 상어는 물고기를 2마리 먹으면 크기가 3이 된다.
+*/
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.util.Queue;
 
-public class Main {
-    static int[] dy = {-1, 0, 0, 1};
-    static int[] dx = {0, -1, 1, 0};
-    static int[][] map;
-
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int N = sc.nextInt();
-
-        map = new int[N][N];
-        int[] cur = null;
-
-        for (int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++) {
-                map[i][j] = sc.nextInt();
-                if (map[i][j] == 9) {
-                    cur = new int[]{i, j};
-                    map[i][j] = 0;
-                }
-            }
-
-        int size = 2;
-        int eat = 0; // 먹은 물고기 수
-        int move = 0; // 움직인 총 거리
-
-        while (true) {
-            PriorityQueue<int[]> que = new PriorityQueue<>((o1, o2) ->
-                    o1[2] != o2[2] ? Integer.compare(o1[2], o2[2]) : (o1[0] != o2[0] ? Integer.compare(o1[0], o2[0]) : Integer.compare(o1[1], o2[1]))
-            );
-            boolean[][] visit = new boolean[N][N];
-
-            que.add(new int[]{cur[0], cur[1], 0}); // y좌표, x좌표, 이동한 거리
-            visit[cur[0]][cur[1]] = true;
-
-            boolean ck = false; // 상어가 먹이를 먹었는지 체크할 변수
-
-            while (!que.isEmpty()) {
-                cur = que.poll();
-
-                if (map[cur[0]][cur[1]] != 0 && map[cur[0]][cur[1]] < size) { // 먹이가 있으면서 상어의 사이즈보다 작다면?
-                    map[cur[0]][cur[1]] = 0; // 물고기를 제거
-                    eat++; 
-                    move += cur[2]; // 움직인 거리를 총 움직인 거리에 추가
-                    ck = true; // 먹이 먹었다고 체크
-                    break;
-                }
-
-                for (int k = 0; k < 4; k++) {
-                    int ny = cur[0] + dy[k];
-                    int nx = cur[1] + dx[k];
-
-                    if (ny < 0 || nx < 0 || nx >= N || ny >= N || visit[ny][nx] || map[ny][nx] > size)
-                        continue;
-
-                    que.add(new int[]{ny, nx, cur[2] + 1});
-                    visit[ny][nx] = true;
-                }
-            }
-
-            if (!ck) // 큐가 비워질 때까지 먹이를 먹은적이 없다면, 더 이상 먹은 물고기가 없으므로 탈출
-                break;
-
-            if (size == eat) { // 사이즈와 먹이를 먹은 수가 동일하다면 상어의 크기를 증가
-                size++;
-                eat = 0;
-            }
-        }
+class Main {
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 
-        System.out.println(move);
+	public static void main(String[] args) throws IOException {
+		int N = Integer.parseInt(br.readLine());
+		Queue<Node> queue;
+		Node cur = null;
 
-    }
+		int time = 0;
+		int[] dx = {0, -1, 0, 1};
+		int[] dy = {-1, 0, 1, 0};
 
+		int size = 2;
+		int eatCount = 0;
+		int[][] map = new int[N][N];
 
+		for (int i = 0; i < N; i++) {
+			String[] m = br.readLine().split(" ");
+			for (int j = 0; j < N; j++) {
+				map[i][j] = Integer.parseInt(m[j]);
+				if (m[j].equals("9")) {
+					cur = new Node(j, i, 0);
+					map[i][j] = 0;
+				}
+			}
+		}
+
+		while (true) {
+			queue = new PriorityQueue<>();
+			boolean wasEat = false;
+			boolean[][] visited = new boolean[N][N];
+			queue.add(cur);
+			visited[cur.y][cur.x] = true;
+
+			while (!queue.isEmpty()) {
+				Node now = queue.poll();
+
+				if (map[now.y][now.x] > 0 && map[now.y][now.x] < size) {
+					wasEat = true;
+					eatCount++;
+					time += now.distance;
+					cur = new Node(now.x, now.y, 0);
+					map[cur.y][cur.x] = 0;
+					break;
+				}
+
+				for (int i = 0; i < 4; i++) {
+					int nx = now.x + dx[i];
+					int ny = now.y + dy[i];
+
+					if (nx < 0 || nx >= N || ny < 0 || ny >= N || visited[ny][nx] || map[ny][nx] > size) {
+						continue;
+					}
+					queue.add(new Node(nx, ny, now.distance + 1));
+					visited[ny][nx] = true;
+
+				}
+			}
+
+			if (wasEat) {
+				if(eatCount == size) {
+					size++;
+					eatCount = 0;
+				}
+				continue;
+			}
+			break;
+
+		}
+
+		System.out.println(time);
+
+	}
+
+	static class Node implements Comparable<Node> {
+		int x;
+		int y;
+		int distance;
+
+		public Node(int x, int y, int distance) {
+			this.x = x;
+			this.y = y;
+			this.distance = distance;
+		}
+
+		@Override
+		public int compareTo(Node o) {
+			if (this.distance != o.distance) {
+				return this.distance - o.distance;
+			}
+			if (this.y != o.y) {
+				return this.y - o.y;
+			}
+			return this.x - o.x;
+		}
+	}
 }
