@@ -1,9 +1,7 @@
-package week1;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class prog_양과_늑대 {
+public class prog_level3_양과_늑대 {
 
 	private class Node {
 		int index;
