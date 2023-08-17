@@ -1,11 +1,9 @@
-package week1;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
-public class prog_과제_진행하기 {
+public class prog_level2_과제_진행하기 {
 
 	private class Plan {
 		String name;
