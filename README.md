@@ -14,9 +14,11 @@
 <br>
 
 ## 📝 File Naming Convention
-문제 풀이 파일은 'Week주차_번호' 형태의 네이밍 사용
+문제 풀이 파일은 '플랫폼_레벨_문제_이름.java' 형태의 네이밍 사용
 ```
-ex. Week1_1.java, Week1_1.py
+ex)
+baek_silver1_문제_이름.java
+prog_level2_문제_이름.java
 ```
 <br>
 
@@ -29,9 +31,11 @@ PR 제목을 아래와 같이 제출
 <br>
 
 ## 📁 FOLDER STRUCTURE
+알고리즘 기준 폴더링 구조
 ```
 EnglishName(ex. CSJ)
-ㄴ week1
-ㄴ week2
+ㄴ BFS
+ㄴ DFS
+ㄴ DP
 ㄴ ...
 ```
