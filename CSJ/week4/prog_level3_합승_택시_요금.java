@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-class Solution {
 
+public class Solution {
 
 	private static ArrayList<ArrayList<Node>> graph = new ArrayList<>();
 
@@ -23,11 +23,12 @@ class Solution {
 		startA = dijkstra(a, startA);
 		startB = dijkstra(b, startB);
 		start = dijkstra(s, start);
-		
+
 		for(int i = 0; i <= n; i++) {
-			answer = Math.min(startA[i] + startB[i] + start[i], answer);
+			// [start에서 i가는 비용 + (i에서 A가는 비용 + i에서 B가는 비용)] 중 최솟값 구하기
+			answer = Math.min(start[i] + startA[i] + startB[i], answer);
 		}
-		
+
 		return answer;
 	}
 
@@ -42,29 +43,31 @@ class Solution {
 		}
 	}
 
-	static int[] dijkstra (int start, int[] costs) {
+	static int[] dijkstra(int start, int[] costs) {
 		PriorityQueue<Node> pq = new PriorityQueue<>();
 		pq.offer(new Node(start, 0));
 		costs[start] = 0;
-
-		while (!pq.isEmpty()) {
+		
+		while(!pq.isEmpty()) {
 			Node now = pq.poll();
 			int nIndex = now.index;
 			int nCost = now.cost;
 
-			if(nCost > costs[nIndex]) continue;
+			if (nCost > costs[nIndex]) {
+				continue;
+			}
 
 			ArrayList<Node> edges = graph.get(nIndex);
 			for (Node edge : edges) {
-				int cost = costs[nIndex] + edge.cost;
-
-				if (cost < costs[edge.index]) {
+				int cost = edge.cost + nCost;
+				if(cost < costs[edge.index]) {
 					costs[edge.index] = cost;
 					pq.offer(new Node(edge.index, cost));
 				}
 			}
 		}
-		return costs;
+		
+		return costs; 
 	}
 
 	private static class Node implements Comparable<Node> {
