@@ -37,6 +37,7 @@ def solution(users, emoticons):
                 sum_price += paid
 
 
+        #최대 값 최선의 경우 
         if(register_user_count < user_count):
             register_user_count = user_count
             max_price = sum_price
